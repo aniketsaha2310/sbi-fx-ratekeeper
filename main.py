@@ -151,7 +151,7 @@ def save_to_csv(
 ) -> None:
     """Save the rates data to the corresponding CSV files."""
     pdf_name = date_time.strftime(FILE_NAME_FORMAT) + ".pdf"
-    pdf_file_link = f"https://github.com/aniketsaha2310/sbi-fx-ratekeeper/tree/sandbox/pdf_files/{date_time.year}/{date_time.month}/{pdf_name}"
+    pdf_file_link = f"https://github.com/aniketsaha2310/sbi-fx-ratekeeper/tree/production/pdf_files/{date_time.year}/{date_time.month}/{pdf_name}"
     formatted_date_time = date_time.strftime(FILE_NAME_WITH_TIME_FORMAT)
 
     output_dir = output_dir or "csv_files"

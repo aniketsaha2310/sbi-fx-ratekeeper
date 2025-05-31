@@ -31,6 +31,8 @@ Typically, the RBI Reference rates have a 20-30 paise difference with the SBI TT
 
 ### Credits
 
+- [Sahil Gupta](https://github.com/sahilgupta) for the repo.
+
 Credit for data prior to Dec 2022 goes to:
 
 - [Shivam Khandelwal](https://github.com/skbly7) for saving the PDF files of SBI's daily forex rates on GitHub since 2020 at [https://github.com/skbly7/sbi-tt-rates-historical]
