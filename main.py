@@ -13,7 +13,7 @@ import anthropic
 import magic
 import PyPDF2
 import requests
-from fp import FreeProxy
+from fp.fp import FreeProxy
 from requests.adapters import HTTPAdapter
 from pdf2image import convert_from_bytes
 from requests_html import HTMLSession
