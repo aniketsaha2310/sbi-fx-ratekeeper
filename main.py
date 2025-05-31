@@ -13,7 +13,7 @@ import anthropic
 import magic
 import PyPDF2
 import requests
-from fp.fp import FreeProxy
+from fp import FreeProxy
 from requests.adapters import HTTPAdapter
 from pdf2image import convert_from_bytes
 from requests_html import HTMLSession
@@ -181,6 +181,7 @@ def save_to_csv(
             writer = csv.DictWriter(f_out, fieldnames=HEADERS)
             writer.writeheader()
             writer.writerows(rows_uniq)
+            print(rows_uniq)
 
 
 def save_pdf_file(
