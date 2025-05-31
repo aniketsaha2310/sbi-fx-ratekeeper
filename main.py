@@ -181,7 +181,6 @@ def save_to_csv(
             writer = csv.DictWriter(f_out, fieldnames=HEADERS)
             writer.writeheader()
             writer.writerows(rows_uniq)
-            print(rows_uniq)
 
 
 def save_pdf_file(
