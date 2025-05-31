@@ -68,7 +68,7 @@ jobs:
     #     commit_message: "Auto Commit: SBI rates at ${{ steps.current-time.outputs.formattedTime }}"
 
 
-    name: Create and start virtual environment
+    - name: Create and start virtual environment
       run: |
         python -m venv venv
         .\venv\Scripts\activate
