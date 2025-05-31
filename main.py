@@ -13,7 +13,7 @@ import anthropic
 import magic
 import PyPDF2
 import requests
-from fp import FreeProxy
+from fp.fp import FreeProxy
 from requests.adapters import HTTPAdapter
 from pdf2image import convert_from_bytes
 from requests_html import HTMLSession
@@ -151,7 +151,7 @@ def save_to_csv(
 ) -> None:
     """Save the rates data to the corresponding CSV files."""
     pdf_name = date_time.strftime(FILE_NAME_FORMAT) + ".pdf"
-    pdf_file_link = f"https://github.com/sahilgupta/sbi-fx-ratekeeper/blob/main/pdf_files/{date_time.year}/{date_time.month}/{pdf_name}"
+    pdf_file_link = f"https://github.com/aniketsaha2310/sbi-fx-ratekeeper/tree/production/pdf_files/{date_time.year}/{date_time.month}/{pdf_name}"
     formatted_date_time = date_time.strftime(FILE_NAME_WITH_TIME_FORMAT)
 
     output_dir = output_dir or "csv_files"
@@ -181,7 +181,6 @@ def save_to_csv(
             writer = csv.DictWriter(f_out, fieldnames=HEADERS)
             writer.writeheader()
             writer.writerows(rows_uniq)
-            print(rows_uniq)
 
 
 def save_pdf_file(
@@ -350,7 +349,7 @@ def parse_historical_data(
 
 if __name__ == "__main__":
     # Example usage: parse historical data
-    # parse_historical_data("/Users/sahilgupta/code/sbi_forex_rates/pdf_files/2024", save_file=False)
+    # parse_historical_data("/Users/aniketsaha2310/code/sbi_forex_rates/pdf_files/2024", save_file=False)
     try:
         file_content = get_latest_pdf_from_sbi()
         process_content(file_content, save_file=True)

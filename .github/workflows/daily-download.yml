@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python 3.10
+    - name: Set up Python 3.12
       uses: actions/setup-python@v3
       with:
         python-version: "3.12"
@@ -33,6 +33,11 @@ jobs:
     - name: Install poppler
       run: |
         sudo apt-get install -y poppler-utils
+
+    - name: Create and start virtual environment
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
 
     - name: Create and start virtual environment
       run: |
@@ -57,6 +62,39 @@ jobs:
         utcOffset: "+05:30"
 
       # Commit the PDF and the updated rates in csv
-    - uses: stefanzweifel/git-auto-commit-action@v4
+    
+    - name: Commit the PDF and the updated rates in csv
+      uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "Auto Commit: SBI rates at ${{ steps.current-time.outputs.formattedTime }}"
+
+
+    # - name: Create and start virtual environment
+    #   run: |
+    #     python -m venv venv
+    #     .\venv\Scripts\activate
+
+    # - name: Install dependencies
+    #   run: |
+    #     .\venv\Scripts\activate
+    #     python -m pip install --upgrade pip
+    #     pip install -r requirements.txt
+
+    # - name: Download and save file
+    #   env:
+    #     ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    #   run: |
+    #     .\venv\Scripts\activate
+    #     python main.py
+
+    # - name: Get current time
+    #   uses: josStorer/get-current-time@v2.0.2
+    #   id: current-time
+    #   with:
+    #     format: "dddd, MMMM Do YYYY, h:mm:ss a"
+    #     utcOffset: "+05:30"
+
+    # - name: Commit the PDF and the updated rates in csv
+    #   uses: stefanzweifel/git-auto-commit-action@v4
+    #   with:
+    #     commit_message: "Auto Commit: SBI rates at ${{ steps.current-time.outputs.formattedTime }}"
