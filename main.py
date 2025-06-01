@@ -5,11 +5,12 @@ import logging
 import os
 from datetime import datetime, date
 from typing import Dict, List, Tuple, Optional
-import base64
+#import base64
 import json
 from dateutil import parser
 
-import anthropic
+#import anthropic
+import google.generativeai as genai
 import magic
 import PyPDF2
 import requests
@@ -240,47 +241,95 @@ def get_latest_pdf_from_sbi() -> io.BytesIO:
     raise Exception("Unable to retrieve a valid PDF")
 
 
+# def process_as_image(
+#     file_content: io.BytesIO,
+# ) -> Tuple[datetime, List[Dict[str, List[str]]]]:
+#     """Process the PDF as an image when text extraction fails."""
+#     pages_images = convert_from_bytes(file_content.getvalue(), dpi=500, size=2000)
+
+#     api_key = os.environ.get("ANTHROPIC_API_KEY")
+#     if not api_key:
+#         raise EnvironmentError("ANTHROPIC_API_KEY not set in environment variables.")
+#     client = anthropic.Anthropic(api_key=api_key)
+
+#     for page in pages_images:
+#         buffered = io.BytesIO()
+#         page.save(buffered, format="JPEG")
+#         image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+#         messages = [
+#             {
+#                 "role": "user",
+#                 "content": [
+#                     {
+#                         "type": "image",
+#                         "source": {
+#                             "type": "base64",
+#                             "media_type": "image/jpeg",
+#                             "data": image_base64,
+#                         },
+#                     },
+#                     {
+#                         "type": "text",
+#                         "text": 'Analyze this image. Check whether it contains the text "be used as reference rates". Parse out the 3-letter ISO currency code from the second column. For instance `USD` from `USD/INR`. Provide a JSON response like the following structure:["has_reference_rates": true or false, "headers": [<list of column headers>], "date": "<date as DD-MM-YYYY>", "time": "<time of publishing in HH:MM AM/PM format>", "forex_rates": [{"currency_code": "<currency short code>"","rates": [83.57, 84.42, 83.50, 84.59, 83.50, 84.59, 82.55, 84.90}]',
+#                     },
+#                 ],
+#             }
+#         ]
+
+#         response = client.messages.create(
+#             model="claude-3-haiku-20240307", max_tokens=4096, messages=messages
+#         )
+
+#         response_json = json.loads(response.content[0].text)
+#         if response_json.get("has_reference_rates"):
+#             if response_json.get("headers")[1:] == TABLE_COLUMNS:
+#                 date_str = response_json["date"]
+#                 time_str = response_json["time"]
+
+#                 date_time_str = f"Date: {date_str}\nTime: {time_str}"
+#                 extracted_date_time = extract_date_time(date_time_str)
+
+#                 return extracted_date_time, response_json["forex_rates"]
+
+#     raise ValueError("Unable to extract reference rates from images")
+
+
 def process_as_image(
     file_content: io.BytesIO,
 ) -> Tuple[datetime, List[Dict[str, List[str]]]]:
     """Process the PDF as an image when text extraction fails."""
     pages_images = convert_from_bytes(file_content.getvalue(), dpi=500, size=2000)
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        raise EnvironmentError("ANTHROPIC_API_KEY not set in environment variables.")
-    client = anthropic.Anthropic(api_key=api_key)
+        raise EnvironmentError("GEMINI_API_KEY not set in environment variables.")
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-pro-vision")
 
     for page in pages_images:
         buffered = io.BytesIO()
         page.save(buffered, format="JPEG")
-        image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "image/jpeg",
-                            "data": image_base64,
-                        },
-                    },
-                    {
-                        "type": "text",
-                        "text": 'Analyze this image. Check whether it contains the text "be used as reference rates". Parse out the 3-letter ISO currency code from the second column. For instance `USD` from `USD/INR`. Provide a JSON response like the following structure:["has_reference_rates": true or false, "headers": [<list of column headers>], "date": "<date as DD-MM-YYYY>", "time": "<time of publishing in HH:MM AM/PM format>", "forex_rates": [{"currency_code": "<currency short code>"","rates": [83.57, 84.42, 83.50, 84.59, 83.50, 84.59, 82.55, 84.90}]',
-                    },
-                ],
-            }
-        ]
-
-        response = client.messages.create(
-            model="claude-3-haiku-20240307", max_tokens=4096, messages=messages
+        prompt = (
+            'Analyze this image. Check whether it contains the text "be used as reference rates". '
+            'Parse out the 3-letter ISO currency code from the second column. For instance `USD` from `USD/INR`. '
+            'Provide a JSON response like the following structure: '
+            '{"has_reference_rates": true or false, "headers": [<list of column headers>], '
+            '"date": "<date as DD-MM-YYYY>", "time": "<time of publishing in HH:MM AM/PM format>", '
+            '"forex_rates": [{"currency_code": "<currency short code>", "rates": [83.57, 84.42, 83.50, 84.59, 83.50, 84.59, 82.55, 84.90]}]}'
         )
 
-        response_json = json.loads(response.content[0].text)
+        response = model.generate_content(
+            [prompt, buffered.getvalue()],
+            stream=False,
+        )
+
+        try:
+            response_json = json.loads(response.text)
+        except Exception as e:
+            logger.warning(f"Failed to parse Gemini response as JSON: {e}")
+            continue
+
         if response_json.get("has_reference_rates"):
             if response_json.get("headers")[1:] == TABLE_COLUMNS:
                 date_str = response_json["date"]
