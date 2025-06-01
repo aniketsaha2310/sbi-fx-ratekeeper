@@ -50,6 +50,19 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
+def pick_env(branch: Optional[str] = None) -> dict:
+    """
+    Returns environment-specific settings such as the base GitHub tree path.
+    If branch is not provided, it uses the current branch from GITHUB_REF or defaults to 'production'.
+    """
+    # Try to get branch from environment (GitHub Actions) or use provided branch
+    branch_name = branch or os.environ.get("GITHUB_REF", "refs/heads/production").split("/")[-1]
+
+    # You can add more environment-specific settings here if needed
+    env = {
+        "tree_path": f"https://github.com/aniketsaha2310/sbi-fx-ratekeeper/tree/{branch_name}/pdf_files"
+    }
+    return env
 
 def setup_session() -> HTMLSession:
     """Set up an HTMLSession with retries"""
@@ -152,7 +165,9 @@ def save_to_csv(
 ) -> None:
     """Save the rates data to the corresponding CSV files."""
     pdf_name = date_time.strftime(FILE_NAME_FORMAT) + ".pdf"
-    pdf_file_link = f"https://github.com/aniketsaha2310/sbi-fx-ratekeeper/tree/production/pdf_files/{date_time.year}/{date_time.month}/{pdf_name}"
+    env = pick_env()
+    pdf_file_link = f"{env['tree_path']}/{date_time.year}/{date_time.month}/{pdf_name}"
+    #pdf_file_link = f"https://github.com/aniketsaha2310/sbi-fx-ratekeeper/tree/production/pdf_files/{date_time.year}/{date_time.month}/{pdf_name}"
     formatted_date_time = date_time.strftime(FILE_NAME_WITH_TIME_FORMAT)
 
     output_dir = output_dir or "csv_files"
