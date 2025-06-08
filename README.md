@@ -22,6 +22,9 @@ The PDFs (saved from the SBI servers) are available in the *pdf_files/* folder. 
 The SBI explicitly mentions that only the rates published for ₹10-20 lakh transaction range are to be considered as reference rates.
 The reference rates do NOT change based on your transaction value, which could be ₹100 or ₹1 Cr.
 
+**Updatation:**
+The project has been updated to utilize Gemini for image-based SBI ratekeeping , as Anthropic's solution is constrained by daily usage limits, typically restricting the number of prompts or tokens available per day.
+
 ## Known Limitations
 
 - Data is only available from Jan 2020 onwards.
