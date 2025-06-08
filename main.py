@@ -5,11 +5,9 @@ import logging
 import os
 from datetime import datetime, date
 from typing import Dict, List, Tuple, Optional
-#import base64
 import json
 from dateutil import parser
 
-#import anthropic
 import google.generativeai as genai
 import magic
 import PyPDF2
@@ -167,7 +165,6 @@ def save_to_csv(
     pdf_name = date_time.strftime(FILE_NAME_FORMAT) + ".pdf"
     env = pick_env()
     pdf_file_link = f"{env['tree_path']}/{date_time.year}/{date_time.month}/{pdf_name}"
-    #pdf_file_link = f"https://github.com/aniketsaha2310/sbi-fx-ratekeeper/tree/production/pdf_files/{date_time.year}/{date_time.month}/{pdf_name}"
     formatted_date_time = date_time.strftime(FILE_NAME_WITH_TIME_FORMAT)
 
     output_dir = output_dir or "csv_files"
@@ -254,61 +251,6 @@ def get_latest_pdf_from_sbi() -> io.BytesIO:
             logger.info("Failed to download PDF using proxy")
 
     raise Exception("Unable to retrieve a valid PDF")
-
-
-# def process_as_image(
-#     file_content: io.BytesIO,
-# ) -> Tuple[datetime, List[Dict[str, List[str]]]]:
-#     """Process the PDF as an image when text extraction fails."""
-#     pages_images = convert_from_bytes(file_content.getvalue(), dpi=500, size=2000)
-
-#     api_key = os.environ.get("ANTHROPIC_API_KEY")
-#     if not api_key:
-#         raise EnvironmentError("ANTHROPIC_API_KEY not set in environment variables.")
-#     client = anthropic.Anthropic(api_key=api_key)
-
-#     for page in pages_images:
-#         buffered = io.BytesIO()
-#         page.save(buffered, format="JPEG")
-#         image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-#         messages = [
-#             {
-#                 "role": "user",
-#                 "content": [
-#                     {
-#                         "type": "image",
-#                         "source": {
-#                             "type": "base64",
-#                             "media_type": "image/jpeg",
-#                             "data": image_base64,
-#                         },
-#                     },
-#                     {
-#                         "type": "text",
-#                         "text": 'Analyze this image. Check whether it contains the text "be used as reference rates". Parse out the 3-letter ISO currency code from the second column. For instance `USD` from `USD/INR`. Provide a JSON response like the following structure:["has_reference_rates": true or false, "headers": [<list of column headers>], "date": "<date as DD-MM-YYYY>", "time": "<time of publishing in HH:MM AM/PM format>", "forex_rates": [{"currency_code": "<currency short code>"","rates": [83.57, 84.42, 83.50, 84.59, 83.50, 84.59, 82.55, 84.90}]',
-#                     },
-#                 ],
-#             }
-#         ]
-
-#         response = client.messages.create(
-#             model="claude-3-haiku-20240307", max_tokens=4096, messages=messages
-#         )
-
-#         response_json = json.loads(response.content[0].text)
-#         if response_json.get("has_reference_rates"):
-#             if response_json.get("headers")[1:] == TABLE_COLUMNS:
-#                 date_str = response_json["date"]
-#                 time_str = response_json["time"]
-
-#                 date_time_str = f"Date: {date_str}\nTime: {time_str}"
-#                 extracted_date_time = extract_date_time(date_time_str)
-
-#                 return extracted_date_time, response_json["forex_rates"]
-
-#     raise ValueError("Unable to extract reference rates from images")
-
 
 def process_as_image(
     file_content: io.BytesIO,
