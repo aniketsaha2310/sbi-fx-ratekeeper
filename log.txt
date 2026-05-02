@@ -27814,3 +27814,4 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/adapters.py", line 595, in send
     raise SSLError(e, request=request)
 requests.exceptions.SSLError: HTTPSConnectionPool(host='www.sbi.co.in', port=443): Max retries exceeded with url: /documents/16012/1400784/FOREX_CARD_RATES.pdf (Caused by SSLError(CertificateError("hostname 'www.sbi.co.in' doesn't match either of 'sbi.bank.in', 'www.sbi.bank.in'")))
+2026-05-02 11:12:33,595 - __main__ - WARNING - Ambiguous date found: Date 02-05-2026. Using file creation date as tie-breaker.
