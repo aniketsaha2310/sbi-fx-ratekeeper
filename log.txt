@@ -28121,3 +28121,4 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/adapters.py", line 588, in send
     raise RetryError(e, request=request)
 requests.exceptions.RetryError: HTTPSConnectionPool(host='www.sbi.co.in', port=443): Max retries exceeded with url: /documents/16012/1400784/FOREX_CARD_RATES.pdf (Caused by ResponseError('too many 503 error responses'))
+2026-07-01 13:15:04,600 - __main__ - WARNING - Ambiguous date found: Date 01-07-2026. Using file creation date as tie-breaker.
