@@ -28133,3 +28133,4 @@ requests.exceptions.RetryError: HTTPSConnectionPool(host='www.sbi.co.in', port=4
 2026-07-05 17:34:35,914 - __main__ - WARNING - Ambiguous date found: Date 04-07-2026. Using file creation date as tie-breaker.
 2026-07-06 14:03:53,680 - __main__ - WARNING - Ambiguous date found: Date 06-07-2026. Using file creation date as tie-breaker.
 2026-07-06 18:23:05,911 - __main__ - WARNING - Ambiguous date found: Date 06-07-2026. Using file creation date as tie-breaker.
+2026-07-07 12:40:12,816 - __main__ - INFO - Failed to download PDFs directly. Attempting with proxies...
